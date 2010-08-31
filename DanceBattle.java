@@ -1,4 +1,6 @@
-import java.awt.geom.Point2D;
+import java.io.*;
+import java.util.*;
+
 
 /*
  * n possible moves -> (n+r-1)!/(r!(n-1)!) possible combinations where r=2 so (n+1)!/(2!(n-1)!) turns.
@@ -8,24 +10,38 @@ import java.awt.geom.Point2D;
  */
 public class DanceBattle {
 
-	private int movesPossible;
-	boolean[] filler;
-	boolean[][] allTurns;
-	boolean iWin;
+	boolean[][] turnsUsed;
+	boolean lastIsWinner;
+	
+	public static void main(String[] args){
+		Scanner s = new Scanner("");
+		try{
+		s = new Scanner(new File(args[0]));
+		}
+		catch (FileNotFoundException e){
+			
+		}
+		int movesPossible = s.nextInt();
+		int numTurnsTaken = s.nextInt();
+	    Node[] turns = new Node[numTurnsTaken];
+	    if (s.hasNextInt()) turns[0] = (new Node(movesPossible,s.nextInt(),s.nextInt()));
+		for (int i = 1; i<numTurnsTaken; i++){
+			turns[i] = (new Node(turns[i-1],movesPossible,s.nextInt(),s.nextInt()));
+		}
+		DanceBattle d = new DanceBattle(movesPossible,turns);
+		boolean iAmLast = !(numTurnsTaken%2 == 0);
+		if (iAmLast == d.lastIsWinner()) System.out.println("win");
+		else System.out.println("lose");
+		
+	}
 	
 	public DanceBattle(int moves, Node[] used) {
-		movesPossible = moves;
-		filler = new boolean[moves];
-		java.util.Arrays.fill(filler,true);
-		allTurns = new boolean[moves][moves];
-		java.util.Arrays.fill(allTurns,filler);
-		//TODO all searching (and maybe even treebuilding) needs to happen in a findWinStatus(Node nd) method
-		//that uses depth-first. maybe.
-		for (int i = 0; i<used.length; i++){//fill the matrix of used turns
-			allTurns[used[i].getFirstMove()][used[i].getSecondMove()] = false;
-			allTurns[used[i].getSecondMove()][used[i].getFirstMove()] = false;
+		turnsUsed = new boolean[moves][moves];
+		for (int i = 0; i<used.length; i++){//fill the matrix of used turns. maybe do this as we read them
+			turnsUsed[used[i].getFirstMove()][used[i].getSecondMove()] = true;
+			turnsUsed[used[i].getSecondMove()][used[i].getFirstMove()] = true;
 		}//O(n)
-		Boolean[] children = allTurns[used.length - 1];
+		lastIsWinner = findWinStatus(used[used.length - 1]);
 		
 		
 		/*
@@ -36,17 +52,28 @@ public class DanceBattle {
 		 */
 	}	
 	
-	public int turnsPossible(int moves){
-		return fact(moves+1)/(2*fact(moves-1));
+	public boolean lastIsWinner(){
+		return lastIsWinner;
 	}
 	
-	public int fact(int n){//TODO make iterative for efficiency
-		if (n==0) return 1;
-		else return n*fact(n-1); 
-	}
-	
-	public boolean iWin(){
-		return iWin;
+	public boolean findWinStatus(Node nd){
+		boolean isWinner = true;
+		turnsUsed[nd.getFirstMove()][nd.getSecondMove()] = true;
+		turnsUsed[nd.getSecondMove()][nd.getFirstMove()] = true;
+		nd.haveChildren(turnsUsed);
+		if (nd.isLeaf()){			
+			turnsUsed[nd.getFirstMove()][nd.getSecondMove()] = false;
+			turnsUsed[nd.getSecondMove()][nd.getFirstMove()] = false;
+			return isWinner;
+		}
+		Node[] children = nd.getMyChildren();
+		for (int i = 0; i<nd.getNumChildren() && isWinner;i++){
+			Node child = children[i];
+			if (findWinStatus(child)) isWinner = false;
+		}
+		turnsUsed[nd.getFirstMove()][nd.getSecondMove()] = false;
+		turnsUsed[nd.getSecondMove()][nd.getFirstMove()] = false;
+		return isWinner;
 	}
 	 
 }

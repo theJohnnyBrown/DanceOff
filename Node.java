@@ -2,12 +2,33 @@
 public class Node{
 	Node myParent;
 	Node[] myChildren;
-	int numChildren;//TODO make getter
+	int numChildren;
 	int firstMove;
 	int secondMove;
 	
+	public Node(Node parent,int n, int first, int second){
+		myParent = parent;
+		myChildren = new Node[n];//TODO find out if this uses gobs of memory. use an ArrayList?
+		numChildren = 0;
+		firstMove = first;
+		secondMove = second;
+	}
+	
 	public int getFirstMove() {
 		return firstMove;
+	}
+	
+	public void haveChildren(boolean[][] used){
+		//we assume this is checked off
+		for (int n = 0; n<used.length; n++){
+		  if(!used[this.secondMove][n]){
+			  this.addChild(new Node(this,used.length,this.secondMove,n));
+		  }
+		}
+	}
+	
+	public int getNumChildren(){
+		return numChildren;
 	}
 
 	public void setFirstMove(int firstMove) {
@@ -20,15 +41,6 @@ public class Node{
 
 	public void setSecondMove(int secondMove) {
 		this.secondMove = secondMove;
-	}
-
-	public Node(Node parent,int n, int first, int second){
-		myParent = parent;
-		parent.addChild(this);
-		myChildren = new Node[n];//TODO find out if this uses gobs of memory. use an ArrayList?
-		numChildren = 0;
-		firstMove = first;
-		secondMove = second;
 	}
 	
 	public Node(int n, int first, int second){
@@ -56,7 +68,12 @@ public class Node{
 		numChildren++;
 	}
 	
-	public boolean isLeaf(){
+	public boolean isLeaf(){/*
+		String isLeaf;
+		if (numChildren==0) isLeaf = "is a leaf";
+		else isLeaf = "is not a leaf";
+		System.out.println(this.getFirstMove()+ " " + this.getSecondMove()+ " " + isLeaf + " parent is " + myParent.getFirstMove() + " " + myParent.getSecondMove());
+		*/
 		return (numChildren == 0);
 	}
 	
