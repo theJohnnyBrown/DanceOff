@@ -1,0 +1,6 @@
+<project>  
+<property name="keyword" value="dancebattle"/>  
+<javac srcdir="." destdir="."/>  
+<echo message="java -Xmx1024M DanceBattle $*" file="${keyword}"/>  
+<chmod file="${keyword}" perm="a+x"/>  
+</project>

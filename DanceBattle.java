@@ -35,6 +35,36 @@ public class DanceBattle {
 		
 	}
 	
+	public DanceBattle(){
+		
+	}
+	
+	public boolean checkFile(String filename){
+		Scanner s = new Scanner("");
+		try{
+		s = new Scanner(new File(filename));
+		}
+		catch (FileNotFoundException e){
+			
+		}
+		int movesPossible = s.nextInt();
+		int numTurnsTaken = s.nextInt();
+	    Node[] turns = new Node[numTurnsTaken];
+	    if (s.hasNextInt()) turns[0] = (new Node(movesPossible,s.nextInt(),s.nextInt()));
+		for (int i = 1; i<numTurnsTaken; i++){
+			turns[i] = (new Node(turns[i-1],movesPossible,s.nextInt(),s.nextInt()));
+		}
+		turnsUsed = new boolean[movesPossible][movesPossible];
+		for (int i = 0; i<turns.length; i++){//fill the matrix of used turns. maybe do this as we read them
+			turnsUsed[turns[i].getFirstMove()][turns[i].getSecondMove()] = true;
+			turnsUsed[turns[i].getSecondMove()][turns[i].getFirstMove()] = true;
+		}//O(n)
+		lastIsWinner = findWinStatus(turns[turns.length - 1]);
+		boolean iAmLast = !(numTurnsTaken%2 == 0);
+		return (iAmLast == lastIsWinner); 
+
+	}
+	
 	public DanceBattle(int moves, Node[] used) {
 		turnsUsed = new boolean[moves][moves];
 		for (int i = 0; i<used.length; i++){//fill the matrix of used turns. maybe do this as we read them
