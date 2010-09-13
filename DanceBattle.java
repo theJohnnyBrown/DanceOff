@@ -23,6 +23,10 @@ public class DanceBattle {
 		}
 		int movesPossible = s.nextInt();
 		int numTurnsTaken = s.nextInt();
+		if (numTurnsTaken == 0){
+			System.out.println("win");
+			System.exit(0);
+		}
 	    Node[] turns = new Node[numTurnsTaken];
 	    if (s.hasNextInt()) turns[0] = (new Node(movesPossible,s.nextInt(),s.nextInt()));
 		for (int i = 1; i<numTurnsTaken; i++){
@@ -97,6 +101,10 @@ public class DanceBattle {
 			return isWinner;
 		}
 		Node[] children = nd.getMyChildren();
+		for (int i = 0; i<nd.getNumChildren() && isWinner;i++){
+			Node child = children[i];
+			if (child.getFirstMove() == child.getSecondMove()) isWinner = false;
+		}
 		for (int i = 0; i<nd.getNumChildren() && isWinner;i++){
 			Node child = children[i];
 			if (findWinStatus(child)) isWinner = false;

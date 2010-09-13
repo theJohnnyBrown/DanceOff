@@ -1,6 +1,7 @@
 import junit.framework.TestCase;
 
-
+//TODO make longer unit tests to compare times
+// check breadth-first, move isLeaf() check to first loop
 public class DanceBattleTest extends TestCase {
 
 	protected void setUp() throws Exception {
@@ -63,5 +64,12 @@ public class DanceBattleTest extends TestCase {
 		DanceBattle d = new DanceBattle();
 		assertFalse(d.checkFile("data/test77.txt"));
 	}
+	
+	public void testDanceBattle102(){
+		DanceBattle d = new DanceBattle();
+		assertTrue(d.checkFile("data/test102.txt"));
+	}
+	
+	
 
 }
