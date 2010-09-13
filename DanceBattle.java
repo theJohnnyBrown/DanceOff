@@ -24,7 +24,8 @@ public class DanceBattle {
 		int movesPossible = s.nextInt();
 		int numTurnsTaken = s.nextInt();
 		if (numTurnsTaken == 0){
-			System.out.println("win");
+			if (movesPossible > 0) System.out.println("Win");
+			else System.out.println("Lose");
 			System.exit(0);
 		}
 	    Node[] turns = new Node[numTurnsTaken];
@@ -34,8 +35,8 @@ public class DanceBattle {
 		}
 		DanceBattle d = new DanceBattle(movesPossible,turns);
 		boolean iAmLast = !(numTurnsTaken%2 == 0);
-		if (iAmLast == d.lastIsWinner()) System.out.println("win");
-		else System.out.println("lose");
+		if (iAmLast == d.lastIsWinner()) System.out.println("Win");
+		else System.out.println("Lose");
 		
 	}
 	

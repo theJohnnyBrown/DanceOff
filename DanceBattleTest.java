@@ -70,6 +70,11 @@ public class DanceBattleTest extends TestCase {
 		assertTrue(d.checkFile("data/test102.txt"));
 	}
 	
+	public void testDanceBattle34(){
+		DanceBattle d = new DanceBattle();
+		assertFalse(d.checkFile("data/test34.txt"));
+	}
+	
 	
 
 }
