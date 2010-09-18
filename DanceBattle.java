@@ -10,110 +10,80 @@ import java.util.*;
  */
 public class DanceBattle {
 
-	boolean[][] turnsUsed;
-	boolean lastIsWinner;
-	
-	public static void main(String[] args){
-		Scanner s = new Scanner("");
-		try{
-		s = new Scanner(new File(args[0]));
-		}
-		catch (FileNotFoundException e){
-			
-		}
-		int movesPossible = s.nextInt();
-		int numTurnsTaken = s.nextInt();
-		if (numTurnsTaken == 0){
-			if (movesPossible > 0) System.out.println("Win");
-			else System.out.println("Lose");
-			System.exit(0);
-		}
-	    Node[] turns = new Node[numTurnsTaken];
-	    if (s.hasNextInt()) turns[0] = (new Node(movesPossible,s.nextInt(),s.nextInt()));
-		for (int i = 1; i<numTurnsTaken; i++){
-			turns[i] = (new Node(turns[i-1],movesPossible,s.nextInt(),s.nextInt()));
-		}
-		DanceBattle d = new DanceBattle(movesPossible,turns);
-		boolean iAmLast = !(numTurnsTaken%2 == 0);
-		if (iAmLast == d.lastIsWinner()) System.out.println("Win");
-		else System.out.println("Lose");
-		
-	}
-	
-	public DanceBattle(){
-		
-	}
-	
-	public boolean checkFile(String filename){
-		Scanner s = new Scanner("");
-		try{
-		s = new Scanner(new File(filename));
-		}
-		catch (FileNotFoundException e){
-			
-		}
-		int movesPossible = s.nextInt();
-		int numTurnsTaken = s.nextInt();
-	    Node[] turns = new Node[numTurnsTaken];
-	    if (s.hasNextInt()) turns[0] = (new Node(movesPossible,s.nextInt(),s.nextInt()));
-		for (int i = 1; i<numTurnsTaken; i++){
-			turns[i] = (new Node(turns[i-1],movesPossible,s.nextInt(),s.nextInt()));
-		}
-		turnsUsed = new boolean[movesPossible][movesPossible];
-		for (int i = 0; i<turns.length; i++){//fill the matrix of used turns. maybe do this as we read them
-			turnsUsed[turns[i].getFirstMove()][turns[i].getSecondMove()] = true;
-			turnsUsed[turns[i].getSecondMove()][turns[i].getFirstMove()] = true;
-		}//O(n)
-		lastIsWinner = findWinStatus(turns[turns.length - 1]);
-		boolean iAmLast = !(numTurnsTaken%2 == 0);
-		return (iAmLast == lastIsWinner); 
+ boolean[][] turnsUsed;
+ 
+ public static void main(String[] args){
+  DanceBattle d = new DanceBattle();
+  if (d.checkFile(args[0])) System.out.println("win");
+  else System.out.println("Lose");
+  System.exit(0);
+ }
+ 
+ public DanceBattle(){
+  
+ }
+ 
+ public boolean checkFile(String filename){
 
-	}
-	
-	public DanceBattle(int moves, Node[] used) {
-		turnsUsed = new boolean[moves][moves];
-		for (int i = 0; i<used.length; i++){//fill the matrix of used turns. maybe do this as we read them
-			turnsUsed[used[i].getFirstMove()][used[i].getSecondMove()] = true;
-			turnsUsed[used[i].getSecondMove()][used[i].getFirstMove()] = true;
-		}//O(n)
-		lastIsWinner = findWinStatus(used[used.length - 1]);
-		
-		
-		/*
-		 *here we would model the turns alread taken by setting false the cells in this matrix [first,second]
-		 *and also [second,first] (because order doesn't matter for crossing out turns). 
-		 *
-		 *I need to make a decision tree and then figure out what an optimal player would do with that information
-		 */
-	}	
-	
-	public boolean lastIsWinner(){
-		return lastIsWinner;
-	}
-	
-	public boolean findWinStatus(Node nd){
-		boolean isWinner = true;
-		turnsUsed[nd.getFirstMove()][nd.getSecondMove()] = true;
-		turnsUsed[nd.getSecondMove()][nd.getFirstMove()] = true;
-		nd.haveChildren(turnsUsed);
-		if (nd.isLeaf()){			
-			turnsUsed[nd.getFirstMove()][nd.getSecondMove()] = false;
-			turnsUsed[nd.getSecondMove()][nd.getFirstMove()] = false;
-			return isWinner;
-		}
-		Node[] children = nd.getMyChildren();
-		for (int i = 0; i<nd.getNumChildren() && isWinner;i++){
-			Node child = children[i];
-			if (child.getFirstMove() == child.getSecondMove()) isWinner = false;
-		}
-		for (int i = 0; i<nd.getNumChildren() && isWinner;i++){
-			Node child = children[i];
-			if (findWinStatus(child)) isWinner = false;
-		}
-		turnsUsed[nd.getFirstMove()][nd.getSecondMove()] = false;
-		turnsUsed[nd.getSecondMove()][nd.getFirstMove()] = false;
-		return isWinner;
-	}
-	 
+  Scanner s = scannerFor(filename);
+  int movesPossible = s.nextInt();
+  int numTurnsTaken = s.nextInt();
+  Node[] turns = new Node[numTurnsTaken];
+  turnsUsed = new boolean[movesPossible][movesPossible];
+  
+  if (s.hasNextInt()) turns[0] = (new Node(movesPossible,s.nextInt(),s.nextInt()));
+  for (int i = 1; i<numTurnsTaken; i++){
+   turns[i] = (new Node(turns[i-1],movesPossible,s.nextInt(),s.nextInt()));
+   chekov(turns[i]);
+  }
+  
+  boolean iAmLast = !(numTurnsTaken%2 == 0);
+  return (iAmLast == findWinStatus(turns[turns.length - 1])); 
+
+ }
+ 
+ public Scanner scannerFor(String filename){
+	 Scanner s = new Scanner("");
+	  try{
+	  s = new Scanner(new File(filename));
+	  }
+	  catch (FileNotFoundException e){
+	    System.out.println("File: "+filename+" not found");
+	    System.exit(0);
+	  }
+	  return s;
+ }
+  
+ 
+
+ 
+ public boolean findWinStatus(Node nd){
+  boolean isWinner = true;
+  chekov(nd);
+  nd.haveChildren(turnsUsed);
+
+  Node[] children = nd.getMyChildren();
+  for (int i = 0; i<nd.getNumChildren() && isWinner;i++){
+   Node child = children[i];
+   if (child.getFirstMove() == child.getSecondMove()) isWinner = false;
+  }
+  for (int i = 0; i<nd.getNumChildren() && isWinner;i++){
+   Node child = children[i];
+   if (findWinStatus(child)) isWinner = false;
+  }
+  unCheck(nd); 
+  return isWinner;
+ }
+ 
+ private void chekov(Node nd){
+	 turnsUsed[nd.getFirstMove()][nd.getSecondMove()] = true;
+	 turnsUsed[nd.getSecondMove()][nd.getFirstMove()] = true;
+ }
+ 
+ private void unCheck(Node nd){
+	 turnsUsed[nd.getFirstMove()][nd.getSecondMove()] = false;
+	 turnsUsed[nd.getSecondMove()][nd.getFirstMove()] = false; 
+ }
+  
 }
 
