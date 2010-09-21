@@ -84,7 +84,9 @@ String dataPath;
   assertFalse(d.checkFile(dataPath+"test60.txt"));
  }
 
-
+     public void testDanceBattle30(){
+	 DanceBattle d = new DanceBattle();
+	 assertTrue(d.checkFile(dataPath+"test30.txt"));}
 
 public void testDanceBattle65(){//seed65
 DanceBattle d = new DanceBattle();

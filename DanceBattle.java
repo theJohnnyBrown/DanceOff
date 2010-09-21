@@ -14,7 +14,7 @@ public class DanceBattle {
  
  public static void main(String[] args){
   DanceBattle d = new DanceBattle();
-  if (d.checkFile(args[0])) System.out.println("win");
+  if (d.checkFile(args[0])) System.out.println("Win");
   else System.out.println("Lose");
   System.exit(0);
  }
@@ -28,6 +28,10 @@ public class DanceBattle {
   Scanner s = scannerFor(filename);
   int movesPossible = s.nextInt();
   int numTurnsTaken = s.nextInt();
+  if (numTurnsTaken == 0){
+		if (movesPossible > 0) return true;
+		else return false;
+	}
   Node[] turns = new Node[numTurnsTaken];
   turnsUsed = new boolean[movesPossible][movesPossible];
   
